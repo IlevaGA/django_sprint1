@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import Http404
 
 posts = [
     {
@@ -48,8 +49,12 @@ def index(request):
     return render(request, 'blog/index.html', context={"posts": posts[::-1]})
 
 
-def post_detail(request, id):
-    return render(request, 'blog/detail.html', context={"post": posts[id]})
+def post_detail(request, post_id):
+    posts_id = {item["id"]: item for item in posts}
+    if post_id not in posts_id:
+        raise Http404(f"Пост с id {post_id} не существует.")
+    return render(request, 'blog/detail.html',
+                  context={"post": posts_id[post_id]})
 
 
 def category_posts(request, category_slug):
